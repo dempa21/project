@@ -1,69 +1,63 @@
 import { Router } from "express";
-import CartManager from "../dao/dbManagers/cartManager.js";
-import ProductManager from "../dao/dbManagers/productManager.js";
-import { cartModel } from "../dao/models/carts.model.js";
+import CartManager from "../dao/dbManagers/carts.js";
+
+const manager = new CartManager();
 
 const router = Router();
 
-const cartManager = new CartManager();
-const productManager = new ProductManager();
-
-
 router.get("/", async (req, res) => {
-    const carts = await cartManager.findAll();
-    return res.send({status: "success", payload: carts});
+  const carts = await manager.getCarts();
+  return res.send({status: "success", payload: carts});
 
 });
 
-router.get("/:id", async (req, res) => {
-    const id = req.params.id;
-    const cart = await cartManager.getCart(id);
-    return res.send({status: "success", payload: cart});
+router.post("/", async (req, res) => {
+  const cart = req.body;
+  if (!cart) {
+    return res
+      .status(400)
+      .send({ status: "Error", error: "Cart could not be added" });
+  }
 
+  const newCart = await manager.addCart(cart);
+  return res.send({
+    status: "OK",
+    message: "Cart added successfully",
+    payload: newCart,
+  });
 });
 
+router.get("/:cid", async (req, res) => {
+  const cartId = req.params.cid;
+  const cart = await manager.getCartById(cartId);
 
-
-
-router.post('/', async (req, res) => {
-    const cart = req.body;
-    const createdCart = await cartManager.create(cart);
-    if(!createdCart) {
-        return res.status(400).send({status: "error", error: "no cart"})
-    }
-        
-    return res.send({status: "success", payload: createdCart });
-
+  if (!cart) {
+    return res.status(404).send({
+      status: "Error",
+      error: "cart was not found",
+    });
+  }
+  return res.send({ status: "OK", message: "Cart found", payload: cart });
 });
 
-router.post('/:cid/product/:pid', async (req, res) => {
-    const id = req.params.cid;
-    const pid = req.params.pid;
-    const stockP = req.body.stock;
+router.post("/:cid/product/:pid", async (req, res) => {
+  const cartId = req.params.cid;
+  const productId = req.params.pid;
 
-   await cartManager.updateCartByProd(id,pid,stockP);
+  const { quantity } = req.body;
 
+  const newProduct = await manager.addProduct(cartId, productId, quantity);
+
+  if (!newProduct) {
+    return res
+      .status(404)
+      .send({ status: "Error", error: "Product could not be found" });
+  }
+  return res.send({
+    status: "OK",
+    message: "Product successfully added to the cart",
+    payload: newProduct,
+  });
 });
-
-router.delete('/:id', async (req, res) => {
-    const id = req.params.id;
-    await cartManager.delete(); 
-        
-    return res.send({status: "success" });
-
-});
-
-router.post('/', async (req, res) => {
-    const cart = req.body;
-    const cid = req.body.id;
-    const createdProduct = await cartManager.create(cart);
-    if(!createdProduct) {
-        return res.status(400).send({status: "error", error: "no cart"})
-    }
-        
-    return res.send({status: "success", payload: createdCart });
-
-});
-
 
 export default router;

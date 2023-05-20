@@ -1,39 +1,37 @@
-import express from 'express';
-import mongoose from "mongoose";
-import __dirname from './utils.js';
-import handlebars from 'express-handlebars';
-import socket from './socket.js';
-import dotenv from "dotenv";
-import viewsRouter from './routes/views.router.js';
-import productRouter from './routes/products.router.js';
-import cartRouter from './routes/cart.router.js';
-import chatsRouter from "./routes/chats.router.js";
-import messagesRouter from "./routes/messages.router.js";
+import express from "express";
+import handlebars from "express-handlebars";
+import morgan from "morgan";
+import database from "./db.js";
+import socket from "./socket.js";
+import productsRouter from "./routes/product.router.js";
+import cartsRouter from "./routes/cart.router.js";
+import viewsRouter from "./routes/views.router.js";
+import __dirname from "./utils.js";
 
+// Initialization
 const app = express();
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use("/", express.static(`${__dirname}/public`));
-
-const dbUser = process.env.DB_USER;
-const dbPassword = process.env.DB_PASSWORD;
-const dbName = process.env.DB_NAME;
-
-const httpServer = app.listen(8080, () => {
-    console.log("Server runing at port 8080");
-});
-
-
-app.use("/api/products", productRouter);
-app.use("/api/chats", chatsRouter);
-app.use("/api/messages", messagesRouter);
-app.use("/api/carts", cartRouter);
-
+// Settings
 app.engine("handlebars", handlebars.engine());
 app.set("views", `${__dirname}/views`);
 app.set("view engine", "handlebars");
 
+// Midlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use("/", express.static(`${__dirname}/public`));
+app.use(morgan("dev"));
+
+// Database connection
+database.connect();
+
+// Routes
+app.use("/api/products", productsRouter);
+app.use("/api/carts", cartsRouter);
 app.use("/", viewsRouter);
+
+const httpServer = app.listen(8080, (req, res) => {
+  console.log("Listening on port 8080");
+});
 
 socket.connect(httpServer);

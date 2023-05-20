@@ -1,21 +1,21 @@
-import { messageModel } from "../models/message.js";
+import messagesModel from "../models/messages.js";
 
-export default class MessagesManager {
+export default class MessageManager {
   constructor() {}
 
-  getMessages = async () => {
+  createMessage = async function (message) {
     try {
-      const messages = await messageModel.find().lean();
-      return messages;
+      const createdMessage = await messagesModel.create(message);
+      return createdMessage;
     } catch (error) {
       console.log(error);
     }
   };
 
-  createMessage = async (message) => {
+  getMessages = async function () {
     try {
-      const createdMessage = await messageModel.create(message);
-      return createdMessage;
+      const messages = await messagesModel.find();
+      return messages;
     } catch (error) {
       console.log(error);
     }
