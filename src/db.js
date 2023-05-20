@@ -1,10 +1,10 @@
-import config from "./config.js";
 import mongoose from "mongoose";
+import config from "./config.js";
 
 const { dbUrl } = config;
 
 const database = {
-  connect: async function () {
+  connect: async () => {
     try {
       await mongoose.connect(dbUrl);
     } catch (error) {

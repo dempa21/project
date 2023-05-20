@@ -1,56 +1,78 @@
 import { Router } from "express";
+import passport from "passport";
 import ProductManager from "../dao/dbManagers/products.js";
-import CartManager from "../dao/dbManagers/carts.js";
 import MessageManager from "../dao/dbManagers/messages.js";
-import productsModel from "../dao/models/products.js";
-import cartsModel from "../dao/models/carts.js";
-import { checkLogged, checkLogin } from "../middlewares/auth.js";
+import CartManager from "../dao/dbManagers/carts.js";
 
 const router = Router();
 const productManager = new ProductManager();
 const cartManager = new CartManager();
 const messageManager = new MessageManager();
 
-router.get("/", async (req, res) => {
+router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const options = {
+      query: {},
+      pagination: {
+        limit: req.query.limit ?? 10,
+        page: req.query.page ?? 1,
+        lean: true,
+        sort: {},
+      },
+    };
 
-  const { limit, page } = req.query;
-  const products = await productManager.getProducts();
-  if(limit) {
-  const limitedProducts = products.slice(0, limit);
+    if (req.query.category) {
+      options.query.category = req.query.category;
+    }
 
-  return  res.render("home", limitedProducts); }
-  
-  const user = await req.session.user;
-  console.log(user)
-  //res.render("home", { products, style: "styles.css", title: "Products"});
-  res.render("home", {products , user});
-  
+    if (req.query.status) {
+      options.query.status = req.query.status;
+    }
+
+    if (req.query.sort) {
+      options.pagination.sort.price = req.query.sort;
+    }
+
+    const {
+      docs: products,
+      totalPages,
+      prevPage,
+      nextPage,
+      page,
+      hasPrevPage,
+      hasNextPage,
+    } = await productManager.getPaginatedProducts(options);
+
+    const link = "/?page=";
+
+    const prevLink = hasPrevPage ? link + prevPage : link + page;
+    const nextLink = hasNextPage ? link + nextPage : link + page;
+
+    return res.render("home", {
+      products,
+      totalPages,
+      page,
+      hasNextPage,
+      hasPrevPage,
+      prevLink,
+      nextLink,
+      title: "Products",
+      user: req.user,
+    });
+  }
+);
+
+router.get("/product/:pid", async (req, res) => {
+  const productId = req.params.pid;
+  const product = await productManager.getProductById(productId);
+  res.render("product", { title: "Product Details", product });
 });
 
-
-router.get("/products2", async (req, res) => {
-  const {page} = req.query;
-  const products2 = await productManager.getProducts2();
-  const user = await req.session.user;
-  console.log(user)
-  //res.render("home", { products, style: "styles.css", title: "Products"});
-  res.render("home2", {products2 , user});
-});
-  
-router.get("/carts", async (req, res) => {
-
-  const { limit, page } = req.query;
-  const carts = await cartManager.getCarts();
-  if(limit) {
-  const limitedCarts = carts.slice(0, limit);
-
-  return  res.render("home", limitedCarts); }
-  
-  const user = await req.session.user;
-  console.log(user)
-  //res.render("home", { products, style: "styles.css", title: "Products"});
-  res.render("carts", {carts , user});
-  
+router.get("/cart", async (req, res) => {
+  const cart = await cartManager.getCartById("6440b66102acad1337350cc8");
+  res.render("cart", { products: cart.products, title: "Cart Items" });
 });
 
 router.get("/realtimeproducts", async (req, res) => {
@@ -67,21 +89,20 @@ router.get("/chat", async (req, res) => {
   return res.render("messages");
 });
 
-router.get("/login", checkLogged, (req, res) => {
-  res.render("login");
+router.get("/login", (req, res) => {
+  res.render("login", { title: "Login" });
 });
 
-router.get("/register", checkLogged, (req, res) => {
-  res.render("register");
+router.get("/register", (req, res) => {
+  res.render("register", { title: "Register" });
 });
 
-router.get("/profile", checkLogin, (req, res) => {
-  if(!req.session){
-    res.redirect("/login");
+router.get(
+  "/current",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    res.render("profile", { user: req.user });
   }
-  res.render("profile", { user: req.session.user });
-  console.log(user)
-});
-
+);
 
 export default router;
