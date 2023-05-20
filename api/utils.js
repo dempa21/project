@@ -1,5 +1,4 @@
-import multer from 'multer';
-
+import multer from "multer";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 
@@ -11,7 +10,7 @@ const storage = multer.diskStorage({
     cb(null, `${__dirname}/public/images`);
   },
   filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, file.originalname);
   },
 });
 
