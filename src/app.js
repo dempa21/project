@@ -1,39 +1,43 @@
-import express from 'express';
-import mongoose from "mongoose";
-import __dirname from './utils.js';
-import handlebars from 'express-handlebars';
-import socket from './socket.js';
-import dotenv from "dotenv";
-import viewsRouter from './routes/views.router.js';
-import productRouter from './routes/products.router.js';
-import cartRouter from './routes/cart.router.js';
-import chatsRouter from "./routes/chats.router.js";
-import messagesRouter from "./routes/messages.router.js";
+const express = require("express");
+const fs = require('fs');
+const ProductManager = require('./programa.js');
 
+/**
+ * Ya tenemos express instalado, sin embargo, antes de poder usarlo tenemos que inicializarlo.
+ *
+ * A partir de la linea de abajo, nuestra variable "app" tendrá todas las funcionalidades
+ * que nos ofrece express.
+ */
 const app = express();
+const productManager = new ProductManager();
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use("/", express.static(`${__dirname}/public`));
+app.get('/bienvenida',function(req,res) {
+    res.sendFile('./src/index.html' , { root: '.' });
+  });
+  
 
-const dbUser = process.env.DB_USER;
-const dbPassword = process.env.DB_PASSWORD;
-const dbName = process.env.DB_NAME;
+app.get('/products', async (req,res) => {
+  
+  const productos = await productManager.getAll();
+  const {query, limit} = req.query;
+  let productsFiltrados = [...productos]
 
-const httpServer = app.listen(8080, () => {
-    console.log("Server runing at port 8080");
+  if (limit) {
+    productsFiltrados = productsFiltrados.slice(0, Number(limit))
+  }
+
+  res.json(productsFiltrados);
 });
 
+app.get("/products/:pid", async function(req, res) {
 
-app.use("/api/products", productRouter);
-app.use("/api/chats", chatsRouter);
-app.use("/api/messages", messagesRouter);
-app.use("/api/carts", cartRouter);
+  const productos = await productManager.getAll();
+  const idProducto = Number(req.params.pid);
+  const producto = productos.find((p) => p.id === idProducto);
+  if (!producto) return res.send({ error: "Producto no encontrado" });
+  res.send(producto);
+});
 
-app.engine("handlebars", handlebars.engine());
-app.set("views", `${__dirname}/views`);
-app.set("view engine", "handlebars");
-
-app.use("/", viewsRouter);
-
-socket.connect(httpServer);
+app.listen(8080, () => {
+  console.log("Servidor arriba en el puerto 8080");
+});
