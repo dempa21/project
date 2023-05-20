@@ -1,4 +1,4 @@
-function isProtected(req, res, next) {
+function checkLogin(req, res, next) {
   if (!req.session.user) return res.redirect("/login");
   next();
 }
@@ -8,9 +8,4 @@ function checkLogged(req, res, next) {
   next();
 }
 
-function checkSession(req, res, next) {
-  if (req.session.user) return res.redirect("/");
-  next();
-}
-
-export { checkLogged, isProtected, checkSession };
+export { checkLogged, checkLogin };

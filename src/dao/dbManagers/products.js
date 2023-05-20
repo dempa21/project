@@ -3,24 +3,37 @@ import productsModel from "../models/products.js";
 export default class ProductManager {
   constructor() {}
 
+  // getProductsPag = async () => {
+  //   try {
+  //     // const products = await productsModel.find().lean()
+  //     const {
+  //       docs: products,
+  //       hasPrevPage,
+  //       hasNextPage,
+  //       nextPage,
+  //       prevPage,
+  //     } = await productsModel.paginate({}, { limit: 5, page, lean: true });
+  //   }
+  // };
+
   getProducts = async () => {
     try {
-      const products = await productsModel.find().lean();
+      const products = await productsModel.find().lean().limit(5);
       return products;
     } catch (error) {
       console.log(error);
     }
   };
 
-  getPaginatedProducts = async (options) => {
+  getProducts2 = async () => {
     try {
-      const { query, pagination } = options;
-      const paginatedProducts = await productsModel.paginate(query, pagination);
-      return paginatedProducts;
+      const products2 = await productsModel.find().lean().limit(5).skip(5);
+      return products2;
     } catch (error) {
       console.log(error);
     }
   };
+
 
   addProduct = async (product) => {
     try {
@@ -33,7 +46,7 @@ export default class ProductManager {
 
   getProductById = async (id) => {
     try {
-      const product = await productsModel.findOne({ _id: id }).lean();
+      const product = await productsModel.findOne({ _id: id });
       return product;
     } catch (error) {
       console.log(error);

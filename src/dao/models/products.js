@@ -30,7 +30,7 @@ const productsSchema = mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ["toys", "electronics"],
+    enum: ["conservas", "comestibles","bebidas","limpieza", "libros", "bazar","electronics"],
     default: "electronics",
   },
   thumbnails: {
