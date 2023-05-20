@@ -24,8 +24,6 @@ const httpServer = app.listen(8080, () => {
     console.log("Server runing at port 8080");
 });
 
-// mongoose.connect(`mongodb+srv://${dbUser}:${dbPassword}@cluster0.ly4xdtm.mongodb.net/${dbName}?retryWrites=true&w=majority`);
-
 
 app.use("/api/products", productRouter);
 app.use("/api/chats", chatsRouter);

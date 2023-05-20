@@ -15,7 +15,7 @@ const dbName = process.env.DB_NAME;
 const socket = {};
 let messages = [];
 
-const mongoDB = "mongodb+srv://demparom:aCpa58lQKcs1ucRO@cluster0.ly4xdtm.mongodb.net/ecommerce?retryWrites=true&w=majority";
+const mongoDB = "mongodb+srv://${dbUser}:${dbPassword}@cluster0.ly4xdtm.mongodb.net/${dbName}?retryWrites=true&w=majority";
 // const mongoDB = `mongodb+srv://${dbUser}:${dbPassword}@cluster0.ly4xdtm.mongodb.net/${dbName}?retryWrites=true&w=majority`;
 console.log(dbUser);
 mongoose.connect(mongoDB).catch(err => console.log(err))
