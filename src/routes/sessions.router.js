@@ -1,40 +1,23 @@
 import { Router } from "express";
 import SessionManager from "../dao/dbManagers/sessions.js";
 import CartManager from "../dao/dbManagers/carts.js";
+import passport from "passport";
 
 const router = Router();
 const sessionManager = new SessionManager();
 const cartManager = new CartManager();
 
-router.post("/register", async (req, res) => {
-  try {
-    const { first_name, last_name, email, age, password, role } = req.body;
-
-    const isUserRegistered = await sessionManager.getUser({ email });
-    if (isUserRegistered) {
-      return res
-        .status(400)
-        .send({ status: "error", error: "User already exists" });
-    }
-
-    const cart = await cartManager.addCart({});
-
-    const user = {
-      first_name,
-      last_name,
-      email,
-      age,
-      password,
-      role: role ?? "user",
-      cart: cart._id,
-    };
-
-    await sessionManager.register(user);
-
+router.post(
+  "/register",
+   passport.authenticate("register", {
+    failureRedirect: "/api/sessions/failRegister"}),
+    async (req, res) => {
     return res.send({ status: "sucess", message: "user registered" });
-  } catch (error) {
-    console.log(error);
   }
+);
+
+router.get("/failRegister", (req, res) => {
+return res.send({ status: "error", message: "User already exists"});
 });
 
 router.post("/login", async (req, res) => {

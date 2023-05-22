@@ -3,6 +3,8 @@ import handlebars from "express-handlebars";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import morgan from "morgan";
+import passport from "passport";
+import initializePassport from "./auth/passport.js";
 import database from "./db.js";
 import socket from "./socket.js";
 import productsRouter from "./routes/product.router.js";
@@ -36,7 +38,9 @@ app.use(
     secret: config.sessionSecret,
   })
 );
-
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(initializePassport);
 // Database connection
 database.connect();
 
