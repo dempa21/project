@@ -2,7 +2,7 @@ import passport from "passport";
 import local from "passport-local";
 import userModel from "../dao/models/users.js";
 import cartsModel from "../dao/models/carts.js";
-import { createHash } from "../utils.js";
+import { createHash, isValidPassword } from "../utils.js";
 import config from "../config.js";
 
 const { clientID, clientSecret, callbackUrl} = config;
@@ -14,7 +14,6 @@ const initializePassport = () => {
     new LocalStrategy(
       { passReqToCallback: true, usernameField: "email" },
       async (req, username, password, done) => {
-
         try {
             const userExists = await userModel.findOne({email: username});
             const {first_name, last_name, role} = req.body;
@@ -32,7 +31,7 @@ const initializePassport = () => {
                 email: username,
                 password: createHash(password),
                 role: role ?? "user",
-                cartId: cart._id,
+                cart: cart._id,
             }
 
             const result = await userModel.create(user);
@@ -45,6 +44,28 @@ const initializePassport = () => {
       }
     )
   );
+
+  passport.use("login",
+   new LocalStrategy({ usernameField: "email" }, async(username, password, done) => {
+    try {
+      const user = await userModel.findOne({email: username})
+
+      if(!user) {
+        console.error("Authentication Error");
+        return done(null, false);
+      }
+      const validPassword = isValidPassword(user, password)
+      if(!validPassword) {
+      console.error("Incorrect credentials")
+      done(null, false)
+    } else {
+      done(null, user);
+    }
+    } catch (error) {
+      done(error);
+    }
+  }));
+
 
   passport.serializeUser((user, done) => {
     done(null, user._id);

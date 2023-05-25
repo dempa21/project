@@ -38,9 +38,13 @@ app.use(
     secret: config.sessionSecret,
   })
 );
+
+
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(initializePassport);
+initializePassport();
+
+
 // Database connection
 database.connect();
 
