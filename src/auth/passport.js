@@ -15,8 +15,8 @@ const initializePassport = () => {
       { passReqToCallback: true, usernameField: "email" },
       async (req, username, password, done) => {
         try {
-            const userExists = await userModel.findOne({email: username});
-            const {first_name, last_name, role} = req.body;
+            const {first_name, last_name, email, password, role} = req.body;
+            const userExists = await userModel.findOne({email: email});
 
             if(userExists) {
                 console.error("User already exists");
