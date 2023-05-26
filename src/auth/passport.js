@@ -1,12 +1,28 @@
 import passport from "passport";
 import local from "passport-local";
+import jwt from "passport-jwt";
 import userModel from "../dao/models/users.js";
 import cartsModel from "../dao/models/carts.js";
 import { createHash, isValidPassword } from "../utils.js";
 import config from "../config.js";
 
-const { clientID, clientSecret, callbackUrl} = config;
+const { clientID, clientSecret, callbackUrl, jwtSecret} = config;
 const LocalStrategy = local.Strategy;
+const JWTStrategy = jwt.Strategy;
+const ExtractJwt = jwt.ExtractJwt;
+
+const cookieExtractor = (req) => {
+  let token = null;
+  if (req && req.cookies) {
+    token = req.cookies["jwtCookie"];
+  }
+  return token;
+};
+
+const jwtOptions = {
+  secretOrKey: jwtSecret,
+  jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor])
+}
 
 const initializePassport = () => {
   passport.use(
@@ -45,27 +61,15 @@ const initializePassport = () => {
     )
   );
 
-  passport.use("login",
-   new LocalStrategy({ usernameField: "email" }, async(username, password, done) => {
+  passport.use(
+    "jwt",
+    new JWTStrategy(jwtOptions, async(jwt_payload, done) => {
     try {
-      const user = await userModel.findOne({email: username})
-
-      if(!user) {
-        console.error("Authentication Error");
-        return done(null, false);
-      }
-      const validPassword = isValidPassword(user, password)
-      if(!validPassword) {
-      console.error("Incorrect credentials")
-      done(null, false)
-    } else {
-      done(null, user);
-    }
+      return done(null, jwt_payload);
     } catch (error) {
-      done(error);
+      return done(error);
     }
   }));
-
 
   passport.serializeUser((user, done) => {
     done(null, user._id);

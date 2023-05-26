@@ -2,14 +2,13 @@ import { Router } from "express";
 import ProductManager from "../dao/dbManagers/products.js";
 import MessageManager from "../dao/dbManagers/messages.js";
 import CartManager from "../dao/dbManagers/carts.js";
-import { checkLogged, isProtected, checkSession } from "../middlewares/auth.js";
 
 const router = Router();
 const productManager = new ProductManager();
 const cartManager = new CartManager();
 const messageManager = new MessageManager();
 
-router.get("/", isProtected, async (req, res) => {
+router.get("/", async (req, res) => {
   const options = {
     query: {},
     pagination: {
@@ -85,15 +84,15 @@ router.get("/chat", async (req, res) => {
   return res.render("messages");
 });
 
-router.get("/login", checkSession, (req, res) => {
+router.get("/login", (req, res) => {
   res.render("login", { title: "Login" });
 });
 
-router.get("/register", checkLogged, (req, res) => {
+router.get("/register", (req, res) => {
   res.render("register", { title: "Register" });
 });
 
-router.get("/", isProtected, (req, res) => {
+router.get("/", (req, res) => {
   res.render("profile", { user: req.session.user });
 });
 

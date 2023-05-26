@@ -2,6 +2,7 @@ import express from "express";
 import handlebars from "express-handlebars";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import passport from "passport";
 import initializePassport from "./auth/passport.js";
@@ -27,21 +28,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/", express.static(`${__dirname}/public`));
 app.use(morgan("dev"));
-app.use(
-  session({
-    store: MongoStore.create({
-      mongoUrl: config.dbUrl,
-      ttl: 60,
-    }),
-    resave: true,
-    saveUninitialized: false,
-    secret: config.sessionSecret,
-  })
-);
+app.use(cookieParser());
 
 
 app.use(passport.initialize());
-app.use(passport.session());
 initializePassport();
 
 

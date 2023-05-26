@@ -1,11 +1,13 @@
 import { Router } from "express";
 import SessionManager from "../dao/dbManagers/sessions.js";
-import CartManager from "../dao/dbManagers/carts.js";
+import { isValidPassword } from "../utils.js";
+import config from "../config.js";
 import passport from "passport";
+import jwt from "jsonwebtoken";
 
 const router = Router();
 const sessionManager = new SessionManager();
-const cartManager = new CartManager();
+
 
 router.post(
   "/register",
@@ -20,41 +22,35 @@ router.get("/failRegister", (req, res) => {
 return res.send({ status: "error", message: "User already exists"});
 });
 
-router.post("/login",
-passport.authenticate("login", {
-  failureRedirect: "/api/sessions/failLogin"
-}),
+router.post(
+  "/login",
  async (req, res) => {
-  // try {
-  //   const { email, password } = req.body;
-  //   const user = await sessionManager.getUser({ email, password });
+  const { email, password } = req.body;
 
-  //   if (!user) {
-  //     return res
-  //       .status(401)
-  //       .send({ status: "error", error: "Incorrect credentials" });
-  //   }
+  const user = await sessionManager.getUser({email});
 
-    const user = req.user;
+  if(!user) return res
+  .status(401)
+  .send({status: "error", error: "User does not exist"});
 
-    console.log(req.user);
+  if(!isValidPassword(user, password))
+   return res
+    .status(401)
+    .send({status: "error", error: "Invalid credentials"});
 
-    req.session.user = {
-      name: `${user.first_name} ${user.last_name}`,
-      email: user.email,
-      age: user.age,
-      role: user.role,
-      cart: user.cart,
-    };
+  const jwtUser = {
+    name: `${user.first_name} ${user.last_name}`,
+    email: user.email,
+    cart: user.cart,
+  }
 
-    return res.send({
+  const token = jwt.sign(jwtUser, config.jwtSecret, {expiresIn: "24h"})
+    return res 
+    .cookie("jwtCookie", token, {httpOnly: true})
+    .send({
       status: "sucess",
       message: "Logged In",
-      payload: req.session.user,
     });
-  // } catch (error) {
-  //   console.log(error);
-  // }
 });
 
 router.get("/failLogin", (req,res) => {
@@ -66,12 +62,9 @@ router.get("/current", (req, res) => {
 })
 
 router.post("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (!err)
-      return res.send({ status: "sucess", message: "logout sucessful" });
-
-    return res.send({ status: "error", message: err });
-  });
+  return res
+  .clearCookie("jwtCookie")
+  .send({status: "success", message: "logout successfull"});
 });
 
 export default router;
