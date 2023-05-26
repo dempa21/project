@@ -1,14 +1,15 @@
 import passport from "passport";
 import local from "passport-local";
 import jwt from "passport-jwt";
+import { Strategy } from "passport-local";
 import userModel from "../dao/models/users.js";
 import cartsModel from "../dao/models/carts.js";
 import { createHash, isValidPassword } from "../utils.js";
 import config from "../config.js";
 
 const { clientID, clientSecret, callbackUrl, jwtSecret} = config;
-const LocalStrategy = local.Strategy;
-const JWTStrategy = jwt.Strategy;
+const LocalStrategy = Strategy;
+const JWTStrategy = Strategy;
 const ExtractJwt = jwt.ExtractJwt;
 
 const cookieExtractor = (req) => {
