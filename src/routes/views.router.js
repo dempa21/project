@@ -1,4 +1,5 @@
 import { Router } from "express";
+import passport from "passport";
 import ProductManager from "../dao/dbManagers/products.js";
 import MessageManager from "../dao/dbManagers/messages.js";
 import CartManager from "../dao/dbManagers/carts.js";
@@ -8,7 +9,7 @@ const productManager = new ProductManager();
 const cartManager = new CartManager();
 const messageManager = new MessageManager();
 
-router.get("/", async (req, res) => {
+router.get("/", passport.authenticate("jwt", {session: false}),async (req, res) => {
   const options = {
     query: {},
     pagination: {
@@ -55,7 +56,7 @@ router.get("/", async (req, res) => {
     prevLink,
     nextLink,
     title: "Products",
-    user: req.session.user,
+    user: req.user,
   });
 });
 
