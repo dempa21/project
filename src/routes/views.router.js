@@ -93,8 +93,8 @@ router.get("/register", (req, res) => {
   res.render("register", { title: "Register" });
 });
 
-router.get("/", (req, res) => {
-  res.render("profile", { user: req.session.user });
+router.get("/current", passport.authenticate("jwt", {session: false}), (req, res) => {
+  res.render("profile", { user: req.user });
 });
 
 export default router;
