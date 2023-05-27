@@ -1,15 +1,15 @@
 import passport from "passport";
 import local from "passport-local";
 import jwt from "passport-jwt";
-import { Strategy } from "passport-local";
+import GitHubStrategy from "passport-github2";
 import userModel from "../dao/models/users.js";
 import cartsModel from "../dao/models/carts.js";
 import { createHash, isValidPassword } from "../utils.js";
 import config from "../config.js";
 
 const { clientID, clientSecret, callbackUrl, jwtSecret} = config;
-const LocalStrategy = Strategy;
-const JWTStrategy = Strategy;
+const LocalStrategy = local.Strategy;
+const JWTStrategy = jwt.Strategy;
 const ExtractJwt = jwt.ExtractJwt;
 
 const cookieExtractor = (req) => {
@@ -32,7 +32,7 @@ const initializePassport = () => {
       { passReqToCallback: true, usernameField: "email" },
       async (req, username, password, done) => {
         try {
-            const {first_name, last_name, role} = req.body;
+            const {first_name, last_name, email, age, role} = req.body;
             const userExists = await userModel.findOne({email: username});
 
             if(userExists) {
