@@ -72,39 +72,39 @@ const initializePassport = () => {
     }
   }));
 
-  // passport.use(
-  //   "github",
-  //   new GitHubStrategy(
-  //     {
-  //       clientID,
-  //       clientSecret,
-  //       callbackUrl,
-  //     },
-  //     async (accessToken, refreshToken, profile, done) => {
-  //       try {
-  //         let user = await userModel.findOne({ email: profile._json.email });
-  //         if (!user) {
-  //           const cart = await cartsModel.create({});
-  //           let newUser = {
-  //             first_name: profile._json.name,
-  //             last_name: "",
-  //             age: 18,
-  //             email: profile._json.email,
-  //             password: "",
-  //             cart: cart._id,
-  //           };
+  passport.use(
+    "github",
+    new GitHubStrategy(
+      {
+        clientID,
+        clientSecret,
+        callbackUrl,
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          let user = await userModel.findOne({ email: profile._json.email });
+          if (!user) {
+            const cart = await cartsModel.create({});
+            let newUser = {
+              first_name: profile._json.name,
+              last_name: "",
+              age: 18,
+              email: profile._json.email,
+              password: "",
+              cart: cart._id,
+            };
 
-  //           let result = await userModel.create(newUser);
-  //           return done(null, result);
-  //         }
+            let result = await userModel.create(newUser);
+            return done(null, result);
+          }
 
-  //         return done(null, user);
-  //       } catch (error) {
-  //         return done(error);
-  //       }
-  //     }
-  //   )
-  // );
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
 
 
   passport.serializeUser((user, done) => {

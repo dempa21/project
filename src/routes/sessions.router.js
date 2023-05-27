@@ -53,6 +53,31 @@ router.post(
     });
 });
 
+router.get(
+  "/github",
+  passport.authenticate("github", { scope: ["user:email"] }),
+  async (req, res) => {}
+);
+
+router.get(
+  "/githubcallback",
+  passport.authenticate("github", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  async (req, res) => {
+    const jwtUser = {
+      name: req.user.first_name,
+      email: req.user.email,
+      cart: req.user.cart,
+    };
+
+    const token = jwt.sign(jwtUser, config.jwtSecret, { expiresIn: "24h" });
+
+    res.cookie("jwtCookie", token, { httpOnly: true }).redirect("/");
+  }
+);
+
 router.get("/failLogin", (req,res) => {
 return res.send({status: "error", error: "Invalid credentials"});
 })
