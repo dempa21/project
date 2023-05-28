@@ -1,13 +1,12 @@
 import { Router } from "express";
-import ProductManager from "../dao/dbManagers/products.js";
-import MessageManager from "../dao/dbManagers/messages.js";
-import CartManager from "../dao/dbManagers/carts.js";
+
 import { checkLogged, isProtected, checkSession } from "../middlewares/auth.js";
+import { getCarts, addCart, getCartById, addProducts, deleteAllProducts, updateProductQuantity } from "../controllers/carts.controller.js";
+import { getProducts, getPaginatedProducts, getProductById, updateProduct  } from "../controllers/products.controller.js";
+import { getMessages } from "../controllers/messages.controller.js";
 
 const router = Router();
-const productManager = new ProductManager();
-const cartManager = new CartManager();
-const messageManager = new MessageManager();
+
 
 router.get("/", isProtected, async (req, res) => {
   const options = {
@@ -40,7 +39,7 @@ router.get("/", isProtected, async (req, res) => {
     page,
     hasPrevPage,
     hasNextPage,
-  } = await productManager.getPaginatedProducts(options);
+  } = await getPaginatedProducts(options);
 
   const link = "/?page=";
 
@@ -62,17 +61,17 @@ router.get("/", isProtected, async (req, res) => {
 
 router.get("/product/:pid", async (req, res) => {
   const productId = req.params.pid;
-  const product = await productManager.getProductById(productId);
+  const product = await getProductById(productId);
   res.render("product", { title: "Product Details", product });
 });
 
 router.get("/cart", async (req, res) => {
-  const cart = await cartManager.getCartById("6440b66102acad1337350cc8");
+  const cart = await getCartById("6440b66102acad1337350cc8");
   res.render("cart", { products: cart.products, title: "Cart Items" });
 });
 
 router.get("/realtimeproducts", async (req, res) => {
-  const products = await productManager.getProducts();
+  const products = await getProducts();
   res.render("realtime-products", {
     products,
     style: "styles.css",
@@ -81,7 +80,7 @@ router.get("/realtimeproducts", async (req, res) => {
 });
 
 router.get("/chat", async (req, res) => {
-  const messages = await messageManager.getMessages();
+  const messages = await getMessages();
   return res.render("messages");
 });
 

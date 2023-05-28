@@ -1,11 +1,9 @@
 import { Router } from "express";
-import SessionManager from "../dao/dbManagers/sessions.js";
-import CartManager from "../dao/dbManagers/carts.js";
+import { getUser, register} from "../controllers/sessions.controller.js";
 import passport from "passport";
 
 const router = Router();
-const sessionManager = new SessionManager();
-const cartManager = new CartManager();
+
 
 router.post(
   "/register",

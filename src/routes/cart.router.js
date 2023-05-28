@@ -1,7 +1,5 @@
 import { Router } from "express";
-import CartManager from "../dao/dbManagers/carts.js";
-
-const manager = new CartManager();
+import { getCarts, addCart, getCartById, addProduct, addProducts, deleteProduct, deleteAllProducts, updateProductQuantity } from "../controllers/carts.controller.js";
 
 const router = Router();
 
@@ -14,7 +12,7 @@ router.post("/", async (req, res) => {
       .send({ status: "Error", error: "Cart could not be added" });
   }
 
-  const newCart = await manager.addCart(cart);
+  const newCart = await addCart(cart);
   return res.send({
     status: "OK",
     message: "Cart added successfully",
@@ -29,7 +27,7 @@ router.post("/:cid/product/:pid", async (req, res) => {
 
   const { quantity } = req.body;
 
-  const newProduct = await manager.addProduct(cartId, productId, quantity);
+  const newProduct = await addProduct(cartId, productId, quantity);
 
   if (!newProduct) {
     return res
@@ -48,7 +46,7 @@ router.post("/:cid", async (req, res) => {
   const cartId = req.params.cid;
   const products = req.body;
 
-  const updatedCart = await manager.addProducts(cartId, products);
+  const updatedCart = await addProducts(cartId, products);
   if (!updatedCart)
     return res.status(400).send({ status: "error", error: "error" });
 
@@ -57,14 +55,14 @@ router.post("/:cid", async (req, res) => {
 
 // Gets all carts
 router.get("/", async (req, res) => {
-  const carts = await manager.getCarts();
+  const carts = await getCarts();
   return res.send({ status: "success", payload: carts });
 });
 
 // Gets a cart by id
 router.get("/:cid", async (req, res) => {
   const cartId = req.params.cid;
-  const cart = await manager.getCartById(cartId);
+  const cart = await getCartById(cartId);
 
   if (!cart) {
     return res.status(404).send({
@@ -80,7 +78,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
   const cartId = req.params.cid;
   const productId = req.params.pid;
 
-  const updatedCart = await manager.deleteProduct(cartId, productId);
+  const updatedCart = await deleteProduct(cartId, productId);
 
   if (!updatedCart)
     return res
@@ -94,7 +92,7 @@ router.delete("/:cid/product/:pid", async (req, res) => {
 router.delete("/:cid", async (req, res) => {
   const cartId = req.params.cid;
 
-  const updatedCart = await manager.deleteAllProducts(cartId);
+  const updatedCart = await deleteAllProducts(cartId);
 
   if (!updatedCart)
     return res.status(404).send({ status: "error", error: "cart not found" });
@@ -111,7 +109,7 @@ router.put("/:cid/product/:pid", async (req, res) => {
   const productId = req.params.pid;
   const { quantity } = req.body;
 
-  const updatedCart = await manager.updateProductQuantity(
+  const updatedCart = await updateProductQuantity(
     cartId,
     productId,
     quantity
