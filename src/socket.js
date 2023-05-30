@@ -1,10 +1,9 @@
 import { Server } from "socket.io";
-import MessageManager from "./dao/dbManagers/messages.js";
+import { messagesRepository } from "./repositories/dao/dbManagers/messages.repository.js";
 
 const socket = {};
 //let messages = [];
 
-const messageManager = new MessageManager();
 
 socket.connect = (httpServer) => {
   socket.io = new Server(httpServer);
@@ -18,12 +17,12 @@ socket.connect = (httpServer) => {
     socket.on("message", async (data) => {
       // messages.push(data);
       await messageManager.createMessage(data);
-      let messages = await messageManager.getMessages();
+      let messages = await messagesRepository.getMessages();
       io.emit("messageLogs", messages);
     });
 
     socket.on("user-autenticated", async (data) => {
-      let messages = await messageManager.getMessages();
+      let messages = await messagesRepository.getMessages();
       io.emit("messageLogs", messages);
       socket.broadcast.emit("user-connected", data);
     });

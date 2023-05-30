@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", async (req, res) => {
   const options = {
-    query: {},
+    // query: {},
     pagination: {
       limit: req.query.limit ?? 10,
       page: req.query.page ?? 1,
