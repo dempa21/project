@@ -6,8 +6,16 @@ export function getProducts(req, res) {
 }
 
 export function getPaginatedProducts(req, res) {
-    const products = productsService.getPaginatedProducts();    
-    return res.send({ products });
+    const options = {
+        query: {},
+        pagination: {
+          limit: req.query.limit ?? 10,
+          page: req.query.page ?? 1,
+          sort: {},
+        },
+      };
+    const products = productsService.getPaginatedProducts(options);    
+    return  products;
 }
 
 export function addProduct(req, res) {

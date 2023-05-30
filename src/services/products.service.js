@@ -8,8 +8,8 @@ class productsServices {
         return products;
     }
 
-    getPaginatedProducts() {
-        const products = productsRepository.getPaginatedProducts();
+    getPaginatedProducts(options) {
+        const products = productsRepository.getPaginatedProducts(options);
         return products;
     }
 
