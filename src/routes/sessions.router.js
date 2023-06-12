@@ -1,75 +1,42 @@
 import { Router } from "express";
-import { getUser, register} from "../controllers/sessions.controller.js";
 import passport from "passport";
+import { authentication } from "../middlewares/authentication.js";
+import { current, failLogin, failRegister, github, githubCallback, login, logout, register } from "../controllers/session.controller.js";
+import { authorize } from "../middlewares/authorization.js";
+
 
 const router = Router();
 
-
 router.post(
-  "/register",
-   passport.authenticate("register", {
-    failureRedirect: "/api/sessions/failRegister"}),
-    async (req, res) => {
-    return res.send({ status: "sucess", message: "user registered" });
-  }
+    '/login',
+    passport.authenticate('login', { failureRedirect: '/api/sessions/failLogin' }),
+    login
 );
 
-router.get("/failRegister", (req, res) => {
-return res.send({ status: "error", message: "User already exists"});
-});
+router.get("/failLogin", failLogin);
 
-router.post("/login",
-passport.authenticate("login", {
-  failureRedirect: "/api/sessions/failLogin"
-}),
- async (req, res) => {
-  // try {
-  //   const { email, password } = req.body;
-  //   const user = await sessionManager.getUser({ email, password });
+router.post(
+    "/register", 
+    passport.authenticate("register", 
+    { failureRedirect: "/api/sessions/failRegister" }
+    ), register);
 
-  //   if (!user) {
-  //     return res
-  //       .status(401)
-  //       .send({ status: "error", error: "Incorrect credentials" });
-  //   }
+router.get("/failRegister", failRegister);
 
-    const user = req.user;
+router.post("/logout", logout);
 
-    console.log(req.user);
+router.get("/current", authentication(), authorize(['user']), current);
 
-    req.session.user = {
-      name: `${user.first_name} ${user.last_name}`,
-      email: user.email,
-      age: user.age,
-      role: user.role,
-      cart: user.cart,
-    };
+router.get(
+    "/github", 
+    passport.authenticate("github", {scope: ["user:email"]}),
+    github
+);
 
-    return res.send({
-      status: "sucess",
-      message: "Logged In",
-      payload: req.session.user,
-    });
-  // } catch (error) {
-  //   console.log(error);
-  // }
-});
-
-router.get("/failLogin", (req,res) => {
-return res.send({status: "error", error: "Invalid credentials"});
-})
-
-router.get("/current", (req, res) => {
-  return res.send({payload: req.session.user});
-})
-
-router.post("/logout", (req, res) => {
-  req.session.destroy((err) => {
-    if (!err)
-      return res.send({ status: "sucess", message: "logout sucessful" });
-
-    return res.send({ status: "error", message: err });
-  });
-});
+router.get(
+    "/githubcallback",
+    passport.authenticate("github", {failureRedirect: "/login"}),
+    githubCallback
+);
 
 export default router;

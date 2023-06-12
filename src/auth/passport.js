@@ -1,80 +1,75 @@
 import passport from "passport";
-import local from "passport-local";
-import userModel from "../repositories/dao/models/users.js";
-import cartsModel from "../repositories/dao/models/carts.js";
+import GitHubStrategy from "passport-github2";
+import { userModel } from "../dao/models/user.model.js";
 import { createHash, isValidPassword } from "../utils.js";
 import config from "../config.js";
-
-const { clientID, clientSecret, callbackUrl} = config;
+import local from "passport-local";
+import { cartModel } from "../dao/models/cart.model.js";
+const { clientID, clientSecret, callbackUrl } = config;
 const LocalStrategy = local.Strategy;
 
+// Services
+import { userService } from "../dao/services/user.service.js";
+import { cartService } from "../dao/services/cart.service.js";
+
 const initializePassport = () => {
-  passport.use(
-    "register",
-    new LocalStrategy(
-      { passReqToCallback: true, usernameField: "email" },
-      async (req, username, password, done) => {
-        try {
-            const {first_name, last_name, email, password, role} = req.body;
-            const userExists = await userModel.findOne({email: email});
-
-            if(userExists) {
-                console.error("User already exists");
-                done(null, false);
+    passport.use(
+        "github",
+        new GitHubStrategy({
+            clientID,
+            clientSecret,
+            callbackUrl
+        }, async(accessToken, refreshToken, profile, done) => {
+            try {
+                const result = await userService.authenticateWithGithub(profile);
+                done(null, result);
+            } catch (error) {
+                return done(error);
             }
-
-            const cart = await cartsModel.create({});
-            
-            const user = {
-                first_name,
-                last_name,
-                email: username,
-                password: createHash(password),
-                role: role ?? "user",
-                cart: cart._id,
+        })
+    );
+    passport.use(
+        "register", new LocalStrategy(
+            { passReqToCallback: true, usernameField: "email" }, 
+            async (req, username, password, done) => {
+                try {
+                    const { first_name, last_name, role, age } = req.body;
+                    const cart = await cartService.createCart({products: []});
+                    const user = {
+                        first_name,
+                        last_name,
+                        email: username,
+                        age: age,
+                        password: createHash(password),
+                        role: role ?? "user",
+                        cart: cart._id,
+                    };
+                    
+                    const result = await userService.register(user);
+                    return done(null, result._id);
+                } catch (error) {
+                    return done(error);
+                }
+            })
+    );
+    passport.use(
+        "login",
+        new LocalStrategy({ usernameField: "email" }, async (username, password, done) => {
+            try {
+                const user = await userService.login(username, password);
+                return done(null, user._id);
+            } catch (error) {
+                return done(error);
             }
-
-            const result = await userModel.create(user);
-
-            done(null, result);
-        } catch(error) {
-            done(error);
-        }
-        
-      }
-    )
-  );
-
-  passport.use("login",
-   new LocalStrategy({ usernameField: "email" }, async(username, password, done) => {
-    try {
-      const user = await userModel.findOne({email: username})
-
-      if(!user) {
-        console.error("Authentication Error");
-        return done(null, false);
-      }
-      const validPassword = isValidPassword(user, password)
-      if(!validPassword) {
-      console.error("Incorrect credentials")
-      done(null, false)
-    } else {
-      done(null, user);
-    }
-    } catch (error) {
-      done(error);
-    }
-  }));
-
-
-  passport.serializeUser((user, done) => {
-    done(null, user._id);
-  });
-
-  passport.deserializeUser(async (id, done) => {
-    let user = await userModel.findById(id);
-    done(null, user);
-  });
-};
+        })
+    );
+    passport.serializeUser((user, done) => {
+        done(null, user);
+    });
+    passport.deserializeUser( async (id, done) => {
+        const user = await userService.findById(id);
+        done(null, user);
+    });
+}
 
 export default initializePassport;
