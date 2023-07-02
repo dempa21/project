@@ -1,16 +1,32 @@
 import { Router } from "express";
-import { authorize } from "../middlewares/authorization.js";
-import { addProductToCart, createCart, deleteAllProductsFromCart, deleteProductFromCart, findAll, findOne, purchase, putManyProductsInCart, updateQuantityOfProduct } from "../controllers/cart.controller.js";
-import { authentication } from "../middlewares/authentication.js";
+import { passportCall, handlePolicies } from "../middlewares/authorization.js";
+import {
+  getCarts,
+  getCartById,
+  addCart,
+  addProduct,
+  addProducts,
+  deleteProduct,
+  deleteProducts,
+  updateProductQuantity,
+  createPurchase,
+} from "../controllers/carts.controller.js";
+
 const router = Router();
 
-router.get('/', findAll);
-router.get('/:cartId', findOne);
-router.post('/', createCart);
-router.post('/:cartId/products/:productId', authentication(), authorize(['user']), addProductToCart);
-router.delete('/:cartId/products/:productId', authentication(), authorize(['user']), deleteProductFromCart);
-router.delete('/:cartId', authentication(), authorize(['user']), deleteAllProductsFromCart);
-router.put('/:cartId', authentication(), authorize(['user']), putManyProductsInCart);
-router.put('/:cartId/products/:productId', authentication(), authorize(['user']), updateQuantityOfProduct);
-router.get('/:cartId/purchase', authentication(), authorize(['user']), purchase);
+router.get("/", getCarts);
+router.get("/:cid", getCartById);
+router.post("/", addCart);
+router.post("/:cid/product/:pid", addProduct);
+router.post("/:cid", addProducts);
+router.put("/:cid/product/:pid", updateProductQuantity);
+router.delete("/:cid/product/:pid", deleteProduct);
+router.delete("/:cid", deleteProducts);
+router.post(
+  "/:cid/purchase",
+  passportCall("jwt"),
+  handlePolicies(["USER"]),
+  createPurchase
+);
+
 export default router;

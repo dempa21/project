@@ -1,16 +1,25 @@
 import { Router } from "express";
-import { uploader } from './../utils.js';
-import __dirname from "./../utils.js";
-import { authentication } from "../middlewares/authentication.js";
-import { authorize } from "../middlewares/authorization.js";
-import { findAll, findOne, createProduct, updateProduct, deleteProduct } from './../controllers/product.controller.js';
+import { uploader } from "../utils.js";
+import {
+  getProducts,
+  getProductById,
+  addProduct,
+  updateProduct,
+  deleteProduct,
+} from "../controllers/products.controller.js";
+import { handlePolicies } from "../middlewares/authorization.js";
 
 const router = Router();
 
-router.get('/', findAll);
-router.get('/:productId', findOne);
-router.post('/', authentication(), authorize(['admin']), uploader.array('thumbnails'), createProduct);
-router.put('/:productId', authentication(), authorize(['admin']), updateProduct);
-router.delete('/:productId', authentication(), authorize(['admin']), deleteProduct);
+router.get("/", handlePolicies(["ADMIN"]), getProducts);
+router.get("/:pid", handlePolicies(["ADMIN"]), getProductById);
+router.post(
+  "/",
+  uploader.array("thumbnails", 5),
+  handlePolicies(["ADMIN"]),
+  addProduct
+);
+router.put("/:pid", handlePolicies(["ADMIN"]), updateProduct);
+router.delete("/:pid", handlePolicies(["ADMIN"]), deleteProduct);
 
 export default router;
