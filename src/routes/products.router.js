@@ -1,25 +1,16 @@
 import { Router } from "express";
-import { uploader } from "../utils.js";
-import {
-  getProducts,
-  getProductById,
-  addProduct,
-  updateProduct,
-  deleteProduct,
-} from "../controllers/products.controller.js";
-import { handlePolicies } from "../middlewares/authorization.js";
+import { uploader } from '../utils/utils.js';
+import __dirname from "../utils/utils.js";
+import { authentication } from "../middlewares/authentication.js";
+import { authorize } from "../middlewares/authorization.js";
+import { findAll, findOne, createProduct, updateProduct, deleteProduct, mockingProducts } from './../controllers/product.controller.js';
 
 const router = Router();
 
-router.get("/", handlePolicies(["ADMIN"]), getProducts);
-router.get("/:pid", handlePolicies(["ADMIN"]), getProductById);
-router.post(
-  "/",
-  uploader.array("thumbnails", 5),
-  handlePolicies(["ADMIN"]),
-  addProduct
-);
-router.put("/:pid", handlePolicies(["ADMIN"]), updateProduct);
-router.delete("/:pid", handlePolicies(["ADMIN"]), deleteProduct);
-
+router.get('/', findAll);
+router.get('/:productId', findOne);
+router.post('/', authentication(), authorize(['admin', 'premium']), uploader.array('thumbnails'), createProduct);
+router.put('/:productId', authentication(), authorize(['admin', 'premium']), updateProduct);
+router.delete('/:productId', authentication(), authorize(['admin', 'premium']), deleteProduct);
+router.post("/mockingproducts", mockingProducts);
 export default router;

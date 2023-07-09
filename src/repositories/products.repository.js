@@ -1,53 +1,63 @@
-import { productDao } from "../dao/mongo/index.js";
+import { product } from "./../dao/dbManagers/index.js";
 
-export default class ProductsRepository {
-  getProducts = async (options) => {
-    try {
-      const products = await productDao.getProducts(options);
-      return products;
-    } catch (error) {
-      console.log(error);
-      return null;
+export class ProductRepository {
+    constructor(){
+        this.manager = product;
     }
-  };
 
-  getProductById = async (id) => {
-    try {
-      const product = await productDao.getProductById(id);
-      return product;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
+    findAll = async (page, filters = {}, options = {}) => {
+        try {
+          return await this.manager.getAll(page, filters, options);
+        } catch (error) {
+          throw new Error(error);
+        }
+    };
 
-  addProduct = async (product) => {
-    try {
-      const result = await productDao.addProduct(product);
-      return result;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
+    findOne = async (id) => {
+        try {
+          return await this.manager.findOne(id);
+        } catch (error) {
+          throw new Error(error);
+        }
+    };
 
-  updateProduct = async (id, changes) => {
-    try {
-      const result = await productDao.updateProduct(id, changes);
-      return result;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
+    addProduct = async (product) => {
+      try {
+        return await this.manager.addProduct(product);
+      } catch (error) {
+        throw new Error(error);
+      }
+    };
 
-  deleteProduct = async (id) => {
-    try {
-      const result = await productDao.deleteProduct(id);
-      return result;
-    } catch (error) {
-      console.log(error);
-      return null;
+    findByCode = async (code) => {
+      try {
+        return await this.manager.findByCode(code);
+      } catch (error) {
+        throw new Error(error);
+      }
+    };
+
+    updateProduct = async (id, product) => {
+      try {
+        return await this.manager.updateProduct(id, product);
+      } catch (error) {
+        throw new Error(error);
+      }
+    };
+
+    saveProduct = async (product) => {
+      try {
+          return await this.manager.saveProduct(product);
+      } catch (error) {
+          throw new Error(error);
+      }
     }
-  };
+
+    deleteProduct = async (productId) => {
+      try {
+        return await this.manager.deleteProduct(productId);
+      } catch (error) {
+        throw new Error(error);
+      }
+    }
 }

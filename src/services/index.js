@@ -1,7 +1,12 @@
-import ProductsService from "./products.service.js";
-import CartsService from "./carts.service.js";
-import UsersService from "./users.service.js";
+import { CartService } from "./cart.service.js";
+import { ProductService } from "./products.service.js";
+import { TicketService } from "./ticket.service.js";
+import { UserService } from "./user.service.js";
+import { RestoreService } from "./restore.service.js";
 
-export const productsService = new ProductsService();
-export const cartsService = new CartsService();
-export const usersService = new UsersService();
+
+export const cartService = new CartService();
+export const productService = new ProductService();
+export const ticketService = new TicketService();
+export const userService = new UserService();
+export const restoreService = new RestoreService();

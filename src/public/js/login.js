@@ -8,7 +8,7 @@ form.addEventListener("submit", async (e) => {
 
   data.forEach((value, key) => (obj[key] = value));
 
-  let response = await fetch("/api/users/login", {
+  let response = await fetch("/api/sessions/login", {
     method: "POST",
     body: JSON.stringify(obj),
     headers: {
@@ -17,14 +17,10 @@ form.addEventListener("submit", async (e) => {
   });
 
   let result = await response.json();
-
-  if (result.status != "sucess") {
-    Swal.fire({
-      icon: "error",
-      title: "...Oops",
-      text: result.error,
-    });
+  
+  if(result.error) {
+    alert(result.error);
   } else {
-    window.location.href = "/";
+    window.location.href = '/products';
   }
 });
