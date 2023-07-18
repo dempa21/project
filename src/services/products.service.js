@@ -46,7 +46,8 @@ export class ProductService {
                 CustomError.generateCustomError({
                     name: ErrorsName.GENERAL_ERROR_NAME,
                     message: ErrorsMessage.MISSING_FIELDS_MESSAGE,
-                    cause: ErrorsCause.MISSING_FIELDS_CAUSE
+                    cause: ErrorsCause.MISSING_FIELDS_CAUSE,
+                    status: 401
                 });
             }
             let owner = null;

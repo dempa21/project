@@ -4,6 +4,7 @@ import { createHash } from "../utils/utils.js";
 import config from "../config/config.js";
 import local from "passport-local";
 import jwt, { ExtractJwt } from "passport-jwt";
+import { apiResponser } from "../traits/ApiResponser.js";
 
 const { 
     github: { clientID, clientSecret, callbackUrl },
@@ -69,7 +70,10 @@ const initializePassport = () => {
                     };
                     
                     const result = await userService.register(user);
-                    return done(null, result._id);
+                    //return done(null, result._id);
+                    // res.send({response: "success", payload: user});
+                    return apiResponser.successResponse(user);
+                    // return user;
                 } catch (error) {
                     return done(error);
                 }

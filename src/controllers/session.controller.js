@@ -48,7 +48,7 @@ export async function register(req, res) {
 
 export async function failRegister(req, res) {
     try {
-        return apiResponser.errorResponse(res, `El usuario ya se encuentra registrado.`);
+        return apiResponser.errorResponse(res, `El usuario ya se encuentra registrado.`, 400);
     } catch (error) {
         return apiResponser.errorResponse(res, error.message);
     }

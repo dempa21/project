@@ -7,7 +7,9 @@
   "scripts": {
     "start:dev": "nodemon ./src/app.js",
     "start": "nodemon ./src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test:unit": "mocha test/unit/*.test.js --timeout 10000",
+    "test:integration": "mocha ./src/test/integration/*.test.js --timeout 10000",
+    "test": "mocha test/**/*.test.js"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +38,9 @@
     "winston": "^3.9.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22"
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "nodemon": "^2.0.22",
+    "supertest": "^6.3.3"
   }
 }
