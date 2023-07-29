@@ -1,5 +1,5 @@
 const form = document.getElementById("registerForm");
-const button = document.getElementById("reestablecerForm");
+const formEstablecer = document.getElementById("reestablecerForm");
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -27,14 +27,14 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-button.addEventListener("submit", async (e) => {
+formEstablecer.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const { email, password } = req.body;
-  const obj = {
-    email,
-    password
-  }
+  const data = new FormData(formEstablecer);
+  const obj = {};
+
+  data.forEach((value, key) => (obj[key] = value));
+
   
   let response = await fetch("/api/sessions/reestablecer", {
     method: "POST",

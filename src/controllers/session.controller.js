@@ -115,7 +115,9 @@ export async function reestablecerContrasena(req, res) {
         if(result && result.error) {
             return apiResponser.errorResponse(res, result.error, 400);
         }
-
+        // if (req.body.password != result.password ) {
+        //     res.send("Password changed!")
+        // }
         return apiResponser.successResponse(res, result);
     } catch (error) {
         return apiResponser.errorResponse(res, error.message);
