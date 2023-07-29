@@ -1,11 +1,11 @@
-const formEstablecer = document.getElementById("reestablecerForm");
+const form = document.getElementById("reestablecerForm");
 
 
 
-formEstablecer.addEventListener("submit", async (e) => {
+form.addEventListener("submit", async (e) => {
     e.preventDefault();
   
-    const data = new FormData(formEstablecer);
+    const data = new FormData(form);
     const obj = {};
   
     data.forEach((value, key) => (obj[key] = value));

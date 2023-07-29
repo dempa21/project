@@ -110,6 +110,7 @@ export async function reestablecer(req, res) {
 export async function reestablecerContrasena(req, res) {
     try {
         const { email, password } = req.body;
+        console.log(password);
         const result = await userService.reestablacer(email, password);
 
         if(result && result.error) {

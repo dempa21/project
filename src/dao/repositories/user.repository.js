@@ -1,4 +1,5 @@
 import { userModel } from '../models/user.model.js';
+import { createHash } from "../../utils.js";
 
 class UserRepository {
     constructor(){
@@ -45,9 +46,21 @@ class UserRepository {
         }
     }
 
-    updateUser = async (email, password) => {
+    updateUser = async (email, password1) => {
         try {
-            return await this.model.findOneAndUpdate({email: email}, { password: password });
+            let user = await this.model.findOne({email: email});
+            console.log(user);
+            const filter = { _id: user._id };
+            const opts = { new: true}
+            // let doc = await this.model.findOneAndUpdate(filter, {$set: {password: password1}}, opts);
+            // doc.email;
+            // doc.password;
+            // console.log(doc);
+            // console.log(user.password);
+            // console.log(password1);
+            let newpassword = createHash(password1);
+            return await this.model.updateOne(filter, {$set: {password: newpassword}}, opts);
+            
         } catch (error) {
             throw new Error(error);
         }

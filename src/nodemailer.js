@@ -14,19 +14,42 @@ export default class MailingService {
             }
         });
 
-        sendSimpleEmail = async({
+    //     sendSimpleEmail = async({
+    //         from,
+    //         to,
+    //         subject,
+    //         html,
+    //         attachments=[]
+    //         }) => {
+    //         let result = await this.client.sendMail({
+    //             from,
+    //             to,
+    //             subject,
+    //             html,
+    //             attachments});
+
+    //         console.log(result);
+    //         return result;
+    // }
+
+        let from = "demparom@gmail.com";
+        let to = email;
+        let subject = "reestablecer contraseña";
+        let html = `
+        <h1>Correo de recuperación de contraseña</h1>
+        `
+
+     sendSimpleEmail = async (email) => ({
             from,
-            to,
+            to = email,
             subject,
             html,
-            attachments=[]
             }) => {
-            let result = await this.client.sendMail({
+            let result = this.client.sendMail({
                 from,
                 to,
                 subject,
-                html,
-                attachments});
+                html});
 
             console.log(result);
             return result;
