@@ -1,7 +1,7 @@
 import { Router } from "express";
 import passport from "passport";
 import { authentication } from "../middlewares/authentication.js";
-import { current, failLogin, failRegister, github, githubCallback, login, logout, register } from "../controllers/session.controller.js";
+import { current, failLogin, failRegister, github, githubCallback, login, logout, register, reestablecer, reestablecerContrasena } from "../controllers/session.controller.js";
 import { authorize } from "../middlewares/authorization.js";
 
 
@@ -38,5 +38,17 @@ router.get(
     passport.authenticate("github", {failureRedirect: "/login"}),
     githubCallback
 );
+
+router.get(
+    "/reestablecer",
+    reestablecer
+);
+
+router.post(
+    "/reestablecer",
+    reestablecerContrasena
+);
+
+
 
 export default router;

@@ -1,6 +1,7 @@
 import { GetProfile } from "../dao/dtos/getProfile.js";
 import { userService } from "../dao/services/user.service.js";
 import { apiResponser } from "../traits/ApiResponser.js";
+import session from "express-session";
 
 export async function login(req, res) {
     try {
@@ -94,4 +95,30 @@ export async function githubCallback(req, res) {
     } catch (error) {
         return apiResponser.errorResponse(res, error.message);
     }
+
+
 };
+
+export async function reestablecer(req, res) {
+    try {
+        res.render('reestablecer');
+    } catch (error) {
+        return apiResponser.errorResponse(res, error.message);
+    }
+};
+
+export async function reestablecerContrasena(req, res) {
+    try {
+        const { email, password } = req.body;
+        const result = await userService.reestablacer(email, password);
+
+        if(result && result.error) {
+            return apiResponser.errorResponse(res, result.error, 400);
+        }
+
+        return apiResponser.successResponse(res, result);
+    } catch (error) {
+        return apiResponser.errorResponse(res, error.message);
+    }
+};
+

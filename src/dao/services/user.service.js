@@ -72,6 +72,20 @@ class UserService {
             throw new Error(error);
         }
     };
+
+    reestablacer = async (email, password) => {
+        try {
+            const userExists = await this.userRepository.findByEmail(email);
+            if(!userExists) {
+                return { error: 'El usuario no está registrado.' };
+            }
+            return this.userRepository.updateUser(email,password);
+
+
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
 }
 
 export const userService = new UserService();

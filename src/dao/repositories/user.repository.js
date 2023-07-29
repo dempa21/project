@@ -44,6 +44,15 @@ class UserRepository {
             throw new Error(error);
         }
     }
+
+    updateUser = async (email, password) => {
+        try {
+            return await this.model.findOneAndUpdate({email: email}, { password: password });
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
 }
 
 
