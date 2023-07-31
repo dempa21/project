@@ -14,7 +14,7 @@ export async function findAll (req, res) {
 
       const options = { limit, page };
       if (sort) options.sort = sort;
-
+      
       const result = await productService.findAll(page, filters, options);
       const totalPages = result.totalPages;
       const prevPage = result.hasPrevPage ? result.prevPage : null;

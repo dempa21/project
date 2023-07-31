@@ -1,9 +1,9 @@
 import mailer from 'nodemailer';
 import { config } from './config/config.js';
 
-const {nodeMailer: {service, port, user, password}} = config;
+const {nodemailer: {service, port, user, password}} = config;
 
-export default class MailingService {
+class MailingService {
     constructor() {
         this.client = mailer.createTransport({
             service,
@@ -37,8 +37,16 @@ export default class MailingService {
         let subject = "reestablecer contraseña";
         let html = `
         <h1>Correo de recuperación de contraseña</h1>
+
+        Para reestablecer tu contraseña accede a esta URL:
+
+        http://localhost:8080/api/sessions/reestablecer
+
+
         `
 
+        
+        
      sendSimpleEmail = async (email) => ({
             from,
             to = email,
@@ -55,4 +63,7 @@ export default class MailingService {
             return result;
     }
 
+
 }}
+
+export const mailingService = new MailingService();

@@ -15,6 +15,7 @@ import initializePassport from "./auth/passport.js";
 import passport from "passport";
 import bodyparser from "body-parser";
 import MailingService from "./nodemailer.js"; 
+import nodemailer from "nodemailer";
 
 
 
@@ -58,20 +59,30 @@ app.use("/api/carts", cartRouter);
 app.use("/api/sessions", sessionRouter);
 app.use("/api/mockingproducts", mockingRouter);
 
-app.get('/mail', async (req, res) => {
-    let result = await MailingService.sendSimpleEmail({
-        from: "demparom@gmail.com",
-        to: "demparom@gmail.com",
-        subject: "Test mail",
-        html: `
-        <h1>This is a testing mail</h1>
-        `,
-        attachments: [{
-            filename: "bob-esponja.jpg",
-            path: `${ __dirname}/images/bob-esponja.jpg`,
-            cid: "esponja"
-        }]
-    })
- res.send({status: "Sucess", message: "mail sent"});
+// const transport = nodemailer.createTransport({
+//     service : "gmail",
+//     port: 587,
+//     auth: {
+//         user: "demparom@gmail.com",
+//         pass: "srqckwxcawlcbmtm"
+//     }
+
+// })
+
+// app.get('/mail', async (req, res) => {
+//     let result = await transport.sendMail({
+//         from: "demparom@gmail.com",
+//         to: email,
+//         subject: "Test mail",
+//         html: `
+//         <h1>This is a testing mail</h1>
+//         `,
+//         attachments: [{
+//             filename: "bob-esponja.jpg",
+//             path: `${ __dirname}/images/bob-esponja.jpg`,
+//             cid: "esponja"
+//         }]
+//     })
+//  res.send({status: "Sucess", message: "mail sent"});
     
-})
+// })
