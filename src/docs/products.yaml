@@ -71,7 +71,7 @@ paths:
             schema:
               $ref: '#/components/schemas/NewProduct'
       responses:
-        '200':
+        '201':
           description: Éxito
           content:
             application/json:
