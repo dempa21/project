@@ -121,4 +121,27 @@ export class UserService {
             throw new Error(error);
         }
     }
+
+    getUsers = async () => {
+        try {
+            const user = await this.repository.find();
+            if(!user) {
+                CustomError.generateCustomError({
+                    name: ErrorsName.GENERAL_ERROR_NAME,
+                    message: ErrorsMessage.NOT_FOUND_MESSAGE,
+                    cause: ErrorsCause.NOT_FOUND_CAUSE,
+                });
+            }
+            const response = {
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                role: user.role,
+            };
+           
+            return user;
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
 }

@@ -5,6 +5,14 @@ export class UserRepository {
         this.manager = user;
     }
 
+    find = async () => {
+        try {
+            return await this.manager.find();
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
     findByEmail = async (email) => {
         try {
             return await this.manager.findByEmail(email);

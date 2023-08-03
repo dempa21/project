@@ -5,6 +5,14 @@ export class User {
         this.model = userModel;
     }
 
+    find = async () => {
+        try {
+            return await this.model.find().select('first_name last_name email role');
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
     findByEmail = async (email) => {
         try {
             return await this.model.findOne({email: email});
