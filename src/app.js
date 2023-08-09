@@ -31,9 +31,16 @@ app.use(session({
         mongoUrl: config.mongo.dbUrl,
         ttl: 300,
     }),
-    resave: true,
-    saveUninitialized: false,
-    secret: config.session.sessionSecret
+    resave: false,
+    saveUninitialized: true,
+    secret: config.session.sessionSecret,
+    cookie: {
+        path    : '/',
+        secure: config.server.developmentMode !== "development",
+        maxAge: 3600000,
+        proxy: config.server.developmentMode !== "development",
+        expires: new Date(Date.now() + 3600000)
+    }
 }));
 
 app.use(passport.initialize());

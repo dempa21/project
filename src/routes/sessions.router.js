@@ -4,7 +4,6 @@ import { authentication } from "../middlewares/authentication.js";
 import { current, failLogin, failRegister, github, githubCallback, login, logout, register } from "../controllers/session.controller.js";
 import { authorize } from "../middlewares/authorization.js";
 
-
 const router = Router();
 
 router.post(

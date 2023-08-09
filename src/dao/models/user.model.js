@@ -19,6 +19,15 @@ const userSchema = mongoose.Schema({
     cart: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "carts"
+    },
+    last_login: {
+        type: Date
+    },
+    expires_at: {
+        type: Date,
+    },
+    created_at: {
+        type: Date
     }
 });
 

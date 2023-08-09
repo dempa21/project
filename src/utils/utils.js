@@ -42,3 +42,15 @@ export const calculateExpirationDate = () => {
   const expirationDate = new Date(now.getTime() + 1 * 60 * 60 * 1000);
   return expirationDate;
 }
+
+export const calculateUserExpirationDate = () => {
+  const now = new Date();
+  const expirationDate = new Date(now.getTime() + 1 * 60 * 60 * 1000);
+  return expirationDate;
+}
+
+export const calculateUserExpirationDatebyCreation = (created_at) => {
+  const now = created_at.getTime();
+  const expirationDate = new Date(now + 48 * 60 * 60 * 1000);
+  return expirationDate;
+}

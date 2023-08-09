@@ -10,3 +10,12 @@ export async function changeRole(req, res) {
         return apiResponser.errorResponse(res, error.message);
     }
 }
+
+export async function getUsers(req, res) {
+    try {
+        const result = await userService.getUsers();
+        return apiResponser.successResponse(res, result);
+    } catch (error) {
+        return apiResponser.errorResponse(res, error.message);
+    }
+}

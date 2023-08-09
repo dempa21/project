@@ -5,6 +5,22 @@ export class UserRepository {
         this.manager = user;
     }
 
+    find = async () => {
+        try {
+            return await this.manager.find();
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
+    getUsers = async () => {
+        try {
+            return await this.manager.getUsers();
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
     findByEmail = async (email) => {
         try {
             return await this.manager.findByEmail(email);
@@ -29,6 +45,7 @@ export class UserRepository {
         }
     };
 
+
     findByCartId = async(cartId) => {
         try {
             return await this.manager.findByCartId(cartId);
@@ -52,4 +69,31 @@ export class UserRepository {
             throw new Error();
         }
     }
+
+    delete = async (user) => {
+        try {
+            return await this.manager.delete(user);
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
+    deleteById = async (userId) => {
+        try {
+            return await this.manager.deleteById(userId);
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
+    updateOne = async (userId, property, value) => {
+        try {
+            return await this.manager.updateOne(userId, property, value);
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
+   
 }
+

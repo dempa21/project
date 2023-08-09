@@ -1,9 +1,10 @@
-import { productService, cartService, ticketService, restoreService } from "./../services/index.js";
+import { productService, cartService, ticketService, restoreService, userService } from "./../services/index.js";
 import { apiResponser } from "../traits/ApiResponser.js";
 import { GetProfile } from "../dao/dtos/getProfile.js";
 
 export async function home(req, res) {
     try {
+        await userService.runCleanup();
         const { limit = 10, page = 1, query = "{}", sort = null } = req.query;
         const { category, status } = JSON.parse(query);
 
@@ -137,7 +138,19 @@ export async function register(req, res) {
 
 export async function login(req, res) {
     try {
+        await userService.runCleanup();
         res.render('login');      
+    } catch (error) {
+        return apiResponser.errorResponse(res, error.message);
+    }
+};
+
+export async function modifyprofile(req, res) {
+    try {
+        const { uid } = req.params;
+        const user = await userService.findById(uid);
+        const getProfile = new GetProfile(user);
+        res.render('modifyprofile', { user: getProfile });
     } catch (error) {
         return apiResponser.errorResponse(res, error.message);
     }
@@ -146,11 +159,13 @@ export async function login(req, res) {
 export async function profile(req, res) {
     try {
         const getProfile = new GetProfile(req.session.user);
+        req.session.save();
         res.render('profile', { user: getProfile });
     } catch (error) {
         return apiResponser.errorResponse(res, error.message);
     }
 };
+
 
 export async function restorePassword(req, res) {
     try {
@@ -170,3 +185,46 @@ export async function restorePassword(req, res) {
         return apiResponser.errorResponse(res, error.message);
     }
 }
+
+    export async function runCleanup(req, res) {
+        try {
+            return await userService.runCleanup();
+        } catch (error) {
+            return apiResponser.errorResponse(res, error.message);
+        }
+   
+}
+
+export async function updateUser(req, res) {
+    try {
+        const { userId, property, value } = req.body;
+    // Update the user property in MongoDB
+    const update = await userService.updateOne(userId, property, value);
+    res.send({message: "success", payload: update });
+    } catch (error) {
+        return apiResponser.errorResponse(res, error.message);
+    }
+
+}
+
+export async function deleteUser(req, res) {
+    try {
+        const { userId } = req.body;
+    // Update the user property in MongoDB
+        const deleteOne = await userService.deleteById(userId);
+        res.send({message: "Success, user deleted", payload : deleteOne})
+    } catch (error) {
+        return apiResponser.errorResponse(res, error.message);
+    }
+
+}
+
+
+    
+
+ 
+  
+  
+  
+  
+  

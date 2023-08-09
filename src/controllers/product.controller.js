@@ -1,4 +1,4 @@
-import { productService } from "./../services/index.js";
+import { loginService, productService, userService } from "./../services/index.js";
 import CustomError from "../errors/CustomError.js";
 import { ErrorsCause, ErrorsMessage, ErrorsName } from "../errors/enums/product.error.enum.js";
 import { generateProducts } from "../mocks/products.mock.js";
@@ -59,8 +59,9 @@ export async function findOne(req, res) {
 
 export async function createProduct(req, res) {
   try {
+    const { uid } = req.params;
     const product = req.body;
-    const thumbnails = req.files ? req.files.map(file => `${URL}${file.filename}`) : null;
+    const thumbnails = req.body.files ? req.files.map(file => `${URL}${file.filename}`) : null;
 
     if (!thumbnails || thumbnails.length === 0) {
       CustomError.generateCustomError({
@@ -72,7 +73,7 @@ export async function createProduct(req, res) {
 
     product.thumbnails = thumbnails;
 
-    const result = await productService.addProduct(product, req.session.user.id);
+    const result = await productService.addProduct(product, uid);
 
     return apiResponser.successResponse(res, result);
 
@@ -80,6 +81,7 @@ export async function createProduct(req, res) {
     return apiResponser.errorResponse(res, error.message);
   }
 };
+
 
 export async function updateProduct(req, res) {
   try {
@@ -97,9 +99,9 @@ export async function updateProduct(req, res) {
 
 export async function deleteProduct(req, res) {
   try {
-    const { productId } = req.params;
-    
-    const result = await productService.deleteProduct(productId, req.session.user.id);
+    const { productId, uid } = req.params;
+
+    const result = await productService.deleteProduct(productId, uid);
 
     return apiResponser.successResponse(res, result);
 
@@ -119,3 +121,8 @@ export function mockingProducts(req, res) {
     return apiResponser.errorResponse(res, error.message);
   }
 };
+
+
+
+
+

@@ -1,8 +1,10 @@
 import { GetProfile } from "../dao/dtos/getProfile.js";
-import { userService } from "./../services/index.js";
+import { userService, loginService } from "./../services/index.js";
 import { apiResponser } from "../traits/ApiResponser.js";
 import { generateToken } from "../utils/utils.js";
 import config from "../config/config.js";
+
+
 
 const {jwt: { cookie } } = config;
 
@@ -10,20 +12,20 @@ export async function login(req, res) {
     try {
         const { email, password } = req.body;
         const result = await userService.login(email, password);
-
         const token = generateToken(result._id);
-        res.cookie(cookie, token, { httpOnly: true, maxAge: 3600 * 1000 });
+        res.cookie(cookie, token, { httpOnly: true, maxAge: 3600 * 1000});
 
         req.session.user = {
             id: result._id,
-            name: `${result.first_name} ${result.last_name}`,
-            email: result.email,
-            age: result.age,
-            rol: result.role,
-            cart: result.cart,
+            role: result.role,
+            last_login: result.last_login,
+            session: req.sessionID
         };
 
+        const session = await loginService.updateLogin(req.session.user);
+        
         return apiResponser.successResponse(res, req.session.user);
+        // return res.send({message: "Success", payload: req.session.user})
 
     } catch (error) {
         return apiResponser.errorResponse(res, error.message);
