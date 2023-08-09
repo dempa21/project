@@ -1,6 +1,8 @@
 import { productRepository, userRepository } from "../repositories/index.js";
 import CustomError from "./../errors/CustomError.js"; 
 import { ErrorsName, ErrorsMessage, ErrorsCause } from "./../errors/enums/product.error.enum.js";
+import { sendMail } from "../utils/sendMail.js";
+import { deleteProductTemplate } from "../emails/delete.product.js";
 
 export class ProductService {
     constructor(){
@@ -160,6 +162,12 @@ export class ProductService {
                     message: ErrorsMessage.NOT_GET_USER_ID_MESSAGE,
                     cause: ErrorsCause.NOT_GET_USER_ID_CAUSE,
                 });
+            }
+
+            if (user.role === 'premium') {
+                const subject = "Ecommerce API | Eliminación de producto";
+                const message = deleteProductTemplate(existingProduct._id);
+                await sendMail(user.email, subject, message);
             }
 
             return await this.productRepository.deleteProduct(id);

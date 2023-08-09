@@ -1,13 +1,32 @@
 import { userRepository } from "./../repositories/index.js";
 import { cartService } from "./../services/index.js";
-import { isValidPassword } from "./../utils/utils.js";
+import { isValidPassword, calculateUserExpirationDatebyCreation } from "./../utils/utils.js";
 import CustomError from "./../errors/CustomError.js";
 import { ErrorsName, ErrorsMessage, ErrorsCause } from "./../errors/enums/user.error.enum.js";
+import { sendMail } from "../utils/sendMail.js";
+import { deleteUserTemplate } from "../emails/delete.user.js";
 
 export class UserService {
     constructor(){
         this.repository = userRepository;
     }
+
+    
+    deleteById = async (userId) => {
+        try {
+            const deleteUser = await this.repository.deleteById(userId);
+            if(!user) {
+                CustomError.generateCustomError({
+                    name: ErrorsName.GENERAL_ERROR_NAME,
+                    message: ErrorsMessage.NOT_FOUND_MESSAGE,
+                    cause: ErrorsCause.NOT_FOUND_CAUSE,
+                });
+            }           
+            return deleteUser;
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
 
     login = async (email, password) => {
         try {
@@ -48,6 +67,22 @@ export class UserService {
             
             return this.repository.createUser(user);
 
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
+    updateOne = async (userId, property, value) => {
+        try {
+            const user = await this.repository.updateOne(userId, property, value);
+            if(!user) {
+                CustomError.generateCustomError({
+                    name: ErrorsName.GENERAL_ERROR_NAME,
+                    message: ErrorsMessage.NOT_FOUND_MESSAGE,
+                    cause: ErrorsCause.NOT_FOUND_CAUSE,
+                });
+            }           
+            return user;
         } catch (error) {
             throw new Error(error);
         }
@@ -95,6 +130,22 @@ export class UserService {
         }
     };
 
+    getUsers = async () => {
+        try {
+            const user = await this.repository.getUsers();
+            if(!user) {
+                CustomError.generateCustomError({
+                    name: ErrorsName.GENERAL_ERROR_NAME,
+                    message: ErrorsMessage.NOT_FOUND_MESSAGE,
+                    cause: ErrorsCause.NOT_FOUND_CAUSE,
+                });
+            }           
+            return user;
+        } catch (error) {
+            throw new Error(error);
+        }
+    };
+
     changeRole = async (userId) => {
         try {
             const user = await this.repository.findById(userId);
@@ -121,4 +172,38 @@ export class UserService {
             throw new Error(error);
         }
     }
+
+    runCleanup = async() => {
+
+        
+        const cutoffDate = new Date();
+        const users = await this.repository.find();
+        const subject = "Eliminación por inactividad";
+        const message = deleteUserTemplate();
+        users.forEach(async (user) => {
+            if(user.last_login) {
+            if (cutoffDate.getTime() - user.last_login.getTime() > 172800000) {
+                await sendMail(user.email, subject, message);
+                await this.repository.delete(user);  
+            }
+
+             }
+            });
+          
+         
+
+        users.forEach(async (user) => {
+            if(user.created_at) {
+            if(user.last_login) { null } else {
+            if (calculateUserExpirationDatebyCreation(user.created_at) - cutoffDate.getTime() < 0) {
+                await sendMail(user.email, subject, message);
+                await this.repository.delete(user);  
+                
+            }
+            }
+            }
+            });
+        
+        
+        }
 }

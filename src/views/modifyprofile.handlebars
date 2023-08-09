@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<body>
+  <div class="fluid d-flex flex-column justify-content-left vh-100 vw-auto">
+  <form class="d-flex flex-column w-25 border border-2 border-primary rounded-3 p-4">
+    <h1 class="m-2 text-left">Perfil del usuario</h1>
+    <div class="row">
+    <div class="col form-group md-12">
+      <label for="email" class="form-label">Nombre</label>
+      <p>{{user.first_name}}</p>	
+    </div>
+    </div>
+    <div class="row">
+    <div class="col form-group md-12">
+      <label for="email" class="form-label">Email</label>
+      <p>{{user.email}}</p>
+    </div>
+    </div>
+    <form class="row">
+    <div class="col form-group md-12">
+      <label for="email" class="form-label">Edad</label>
+      <p>{{user.age}}</p>
+    </div>
+  </form>
+  
+  <div class="container mt-5">
+    <h1>User Property Update</h1>
+    <form action="/updateUser" method="post">
+    <div class="form-group">
+        <label for="userId">User ID:</label>
+        <input type="text" class="form-control" id="userId" name="userId">
+      </div>
+      <div class="form-group">
+        <label for="property">Property to update:</label>
+        <select class="form-control" id="property" name="property">
+          <option value="role">role</option>
+          <!-- Add more options for other properties as needed -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="value">New value:</label>
+        <input type="text" class="form-control" id="value" name="value">
+      </div>
+      <button type="submit" class="btn btn-primary">Update</button>
+     
+    </form>
+
+    <h1></h1>
+    
+    
+    <h1>Delete User</h1>
+    <form action="/deleteUser" method="post">
+      <div class="form-group">
+        <label for="userId">User ID:</label>
+        <input type="text" class="form-control" id="userId" name="userId">
+      </div>
+      <button type="submit" class="btn btn-danger">Delete User</button>
+    </form>
+  </div>
+  </div>
+
+  <script src="/js/update.js"></script>
+  <!-- Add Bootstrap JS scripts -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
