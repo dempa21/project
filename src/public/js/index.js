@@ -1,5 +1,5 @@
 const addToCart = async (cartId, productId) => {
-    await fetch(`http://localhost:8080/api/carts/${cartId}/products/${productId}`, {
+    await fetch(`https://project-production-704f.up.railway.app/api/carts/${cartId}/products/${productId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -25,7 +25,7 @@ async function agregaUno(cantidad, cartId, productId) {
   const newQuantity = currentQuantity + cantidad;
   if (newQuantity >= 0) {
     // Realizar la solicitud al endpoint del backend
-    await fetch(`http://localhost:8080/api/carts/${cartId}/products/${productId}`, {
+    await fetch(`https://project-production-704f.up.railway.app/api/carts/${cartId}/products/${productId}`, {
       method: 'PUT',
       body: JSON.stringify({ quantity: newQuantity }),
       headers: {
@@ -52,7 +52,7 @@ async function borraUno(cantidad, cartId, productId) {
   
     const newQuantity = currentQuantity - cantidad;
       
-      await fetch(`http://localhost:8080/api/carts/${cartId}/products/${productId}`, {
+      await fetch(`https://project-production-704f.up.railway.app/api/carts/${cartId}/products/${productId}`, {
         method: 'PUT',
         body: JSON.stringify({ quantity: currentQuantity >= 1 ? currentQuantity-1 : 1 }),
         headers: {
@@ -75,7 +75,7 @@ async function borraUno(cantidad, cartId, productId) {
 
   const borrar = async (cartId, productId) => {
     try {
-      await fetch(`http://localhost:8080/api/carts/${cartId}/products/${productId}`, {
+      await fetch(`https://project-production-704f.up.railway.app/api/carts/${cartId}/products/${productId}`, {
         method: 'delete',
         headers: {
           'Content-Type': 'application/json'
@@ -113,7 +113,7 @@ async function borraUno(cantidad, cartId, productId) {
   
   const vaciarCarrito = async (cartId) => {
     try {
-      await fetch(`http://localhost:8080/api/carts/${cartId}`, {
+      await fetch(`https://project-production-704f.up.railway.app/api/carts/${cartId}`, {
         method: 'delete',
         headers: {
           'Content-Type': 'application/json'
@@ -164,7 +164,7 @@ const copyToClipboard = (text) => {
 
 const deleteFromCart = async (cartId, productId) => {
   try {
-    await fetch(`http://localhost:8080/api/carts/${cartId}/products/${productId}`, {
+    await fetch(`https://project-production-704f.up.railway.app/api/carts/${cartId}/products/${productId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
