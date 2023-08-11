@@ -2,6 +2,8 @@ import { productRepository, userRepository } from "../repositories/index.js";
 import CustomError from "./../errors/CustomError.js"; 
 import { ErrorsName, ErrorsMessage, ErrorsCause } from "./../errors/enums/product.error.enum.js";
 import { sendMail } from "../utils/sendMail.js";
+import { deleteProductTemplate } from "../emails/delete.product.js";
+import { userService } from "./index.js";
 
 export class ProductService {
     constructor(){
@@ -147,27 +149,32 @@ export class ProductService {
             }
 
             if(userId) {
-                const user = await this.userRepository.findById(userId);
-                if(user.role === 'premium' && existingProduct.owner !== user._id) {
+                const user = await userService.findById(userId);
+
+                if(userId) {
+                    console.log(user);
+                    if(user.role ==! 'admin' || (user.role === 'premium' && existingProduct.owner !== user._id)) {
+                        CustomError.generateCustomError({
+                            name: ErrorsName.GENERAL_ERROR_NAME,
+                            message: ErrorsMessage.USER_NOT_OWNER_MESSAGE,
+                            cause: ErrorsCause.USER_NOT_OWNER_CAUSE,
+                        });
+                    }
+                } else {
                     CustomError.generateCustomError({
                         name: ErrorsName.GENERAL_ERROR_NAME,
-                        message: ErrorsMessage.USER_NOT_OWNER_MESSAGE,
-                        cause: ErrorsCause.USER_NOT_OWNER_CAUSE,
+                        message: ErrorsMessage.NOT_GET_USER_ID_MESSAGE,
+                        cause: ErrorsCause.NOT_GET_USER_ID_CAUSE,
                     });
                 }
-            } else {
-                CustomError.generateCustomError({
-                    name: ErrorsName.GENERAL_ERROR_NAME,
-                    message: ErrorsMessage.NOT_GET_USER_ID_MESSAGE,
-                    cause: ErrorsCause.NOT_GET_USER_ID_CAUSE,
-                });
+                if (user.role === 'premium') {
+                    const subject = "Eliminación de producto";
+                    const message = deleteProductTemplate(existingProduct._id);
+                    await sendMail(user.email, subject, message);
+                }
             }
-            if (user.role === 'premium') {
-                const subject = "Eliminación de producto";
-                const message = deleteProductTemplate(existingProduct._id);
-                await sendMail(user.email, subject, message);
-            }
-            return await this.productRepository.deleteProduct(id);
+                return await this.productRepository.deleteProduct(id);
+            
         } catch (error) {
             throw new Error(error);
         }

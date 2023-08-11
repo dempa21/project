@@ -68,15 +68,15 @@ export async function createProduct(req, res) {
         const verify = jwt.verify(token, config.jwt.secret, {ignoreExpiration: true} );
         const userId = verify.userId;
     const product = req.body;
-    const thumbnails = req.body.files ? req.files.map(file => `${URL}${file.filename}`) : null;
-
-    if (!thumbnails || thumbnails.length === 0) {
-      CustomError.generateCustomError({
-        name: ErrorsName.GENERAL_ERROR_NAME,
-        message: ErrorsMessage.THUMBNAIL_NOT_UPLOADED_MESSAGE,
-        cause: ErrorsCause.THUMBNAIL_NOT_UPLOADED_CAUSE
-      });
-    }
+    const thumbnails = req.files ? req.files.map(file => `${URL}${file.filename}`) : null;
+    console.log(req.files);
+    // if (!thumbnails || thumbnails.length === 0) {
+    //   CustomError.generateCustomError({
+    //     name: ErrorsName.GENERAL_ERROR_NAME,
+    //     message: ErrorsMessage.THUMBNAIL_NOT_UPLOADED_MESSAGE,
+    //     cause: ErrorsCause.THUMBNAIL_NOT_UPLOADED_CAUSE
+    //   });
+    // }
 
     product.thumbnails = thumbnails;
 
@@ -106,9 +106,17 @@ export async function updateProduct(req, res) {
 
 export async function deleteProduct(req, res) {
   try {
-    const { productId, uid } = req.params;
+    const { productId } = req.params;
 
-    const result = await productService.deleteProduct(productId, uid);
+    const authHeader = req.headers.authorization;
+
+    const token = authHeader.split(" ")[1];
+
+    const verify = jwt.verify(token, config.jwt.secret, {ignoreExpiration: true} );
+
+    const userId = verify.userId;
+
+    const result = await productService.deleteProduct(productId, userId);
 
     return apiResponser.successResponse(res, result);
 
