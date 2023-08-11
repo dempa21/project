@@ -5,11 +5,6 @@ import { userService } from "../services/index.js";
 
 export function authorize(roles) {
     return async (req, res, next) => {
-        const Header = req.headers;
-        console.log(Header);
-        const cookie = req.headers.cookie;
-        let sentencias = cookie.split(/=/)[1];
-        console.log(sentencias);
         const authHeader = req.headers.authorization;
         const token = authHeader.split(" ")[1];
         const verify = jwt.verify(token, config.jwt.secret, {ignoreExpiration: true} );
