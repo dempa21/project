@@ -7,9 +7,9 @@ const router = Router();
 
 router.get('/', getUsers);
 router.get('/delete', deleteUsers);
-router.post("/deleteUser", authentication(true), authorize(['admin']), deleteUser);
-router.get('/modifyprofile/:uid', authentication(true), authorize(['admin']), modifyprofile);
-router.post('/updateUser', authentication(true), authorize(['admin']), updateUser);
+router.post("/deleteUser", authentication(), authorize(['admin']), deleteUser);
+router.get('/modifyprofile/:uid', authentication(), authorize(['admin']), modifyprofile);
+router.post('/updateUser', authentication(), authorize(['admin']), updateUser);
 router.post('/premium/:id', authentication(), authorize(['admin']), changeRole);
 
 export default router;
