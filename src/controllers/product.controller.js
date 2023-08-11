@@ -3,6 +3,8 @@ import CustomError from "../errors/CustomError.js";
 import { ErrorsCause, ErrorsMessage, ErrorsName } from "../errors/enums/product.error.enum.js";
 import { generateProducts } from "../mocks/products.mock.js";
 import { apiResponser } from "../traits/ApiResponser.js";
+import config from "../config/config.js";
+import jwt from "jsonwebtoken";
 const URL = "http://localhost:8080/images/";
 
 export async function findAll (req, res) {
