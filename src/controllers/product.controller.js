@@ -5,7 +5,7 @@ import { generateProducts } from "../mocks/products.mock.js";
 import { apiResponser } from "../traits/ApiResponser.js";
 import config from "../config/config.js";
 import jwt from "jsonwebtoken";
-const URL = "http://localhost:8080/images/";
+const URL = "https://project-production-704f.up.railway.app/images/";
 
 export async function findAll (req, res) {
     try {
