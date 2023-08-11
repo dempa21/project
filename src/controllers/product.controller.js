@@ -61,6 +61,15 @@ export async function findOne(req, res) {
 
 export async function createProduct(req, res) {
   try {
+
+    const authHeader = req.headers.authorization;
+
+    const token = authHeader.split(" ")[1];
+
+    const verify = jwt.verify(token, config.jwt.secret, {ignoreExpiration: true} );
+    
+    const userId = verify.userId;
+
     const product = req.body;
     const thumbnails = req.files ? req.files.map(file => `${URL}${file.filename}`) : null;
 
@@ -74,7 +83,7 @@ export async function createProduct(req, res) {
 
     product.thumbnails = thumbnails;
 
-    const result = await productService.addProduct(product, req.session.user.id);
+    const result = await productService.addProduct(product, userId);
 
     return apiResponser.successResponse(res, result);
 
