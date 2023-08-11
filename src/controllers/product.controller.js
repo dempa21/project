@@ -98,8 +98,16 @@ export async function updateProduct(req, res) {
 export async function deleteProduct(req, res) {
   try {
     const { productId } = req.params;
+
+    const authHeader = req.headers.authorization;
+
+    const token = authHeader.split(" ")[1];
+
+    const verify = jwt.verify(token, config.jwt.secret, {ignoreExpiration: true} );
     
-    const result = await productService.deleteProduct(productId, req.session.user.id);
+    const userId = verify.userId;
+
+    const result = await productService.deleteProduct(productId, userId);
 
     return apiResponser.successResponse(res, result);
 

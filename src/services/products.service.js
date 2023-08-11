@@ -146,10 +146,11 @@ export class ProductService {
                     cause: ErrorsCause.NOT_FOUND_CAUSE
                 });
             }
+            const user = await this.userRepository.findById(userId);
 
             if(userId) {
-                const user = await this.userRepository.findById(userId);
-                if(user.role === 'premium' && existingProduct.owner !== user._id) {
+                console.log(user);
+                if(user.role ==! 'admin' || (user.role === 'premium' && existingProduct.owner !== user._id)) {
                     CustomError.generateCustomError({
                         name: ErrorsName.GENERAL_ERROR_NAME,
                         message: ErrorsMessage.USER_NOT_OWNER_MESSAGE,
@@ -163,12 +164,12 @@ export class ProductService {
                     cause: ErrorsCause.NOT_GET_USER_ID_CAUSE,
                 });
             }
-
             if (user.role === 'premium') {
-                const subject = "Ecommerce API | Eliminación de producto";
+                const subject = "Eliminación de producto";
                 const message = deleteProductTemplate(existingProduct._id);
                 await sendMail(user.email, subject, message);
             }
+
 
             return await this.productRepository.deleteProduct(id);
         } catch (error) {
