@@ -73,13 +73,13 @@ export async function createProduct(req, res) {
     const product = req.body;
     const thumbnails = req.files ? req.files.map(file => `${URL}${file.filename}`) : null;
 
-    if (!thumbnails || thumbnails.length === 0) {
-      CustomError.generateCustomError({
-        name: ErrorsName.GENERAL_ERROR_NAME,
-        message: ErrorsMessage.THUMBNAIL_NOT_UPLOADED_MESSAGE,
-        cause: ErrorsCause.THUMBNAIL_NOT_UPLOADED_CAUSE
-      });
-    }
+    // if (!thumbnails || thumbnails.length === 0) {
+    //   CustomError.generateCustomError({
+    //     name: ErrorsName.GENERAL_ERROR_NAME,
+    //     message: ErrorsMessage.THUMBNAIL_NOT_UPLOADED_MESSAGE,
+    //     cause: ErrorsCause.THUMBNAIL_NOT_UPLOADED_CAUSE
+    //   });
+    // }
 
     product.thumbnails = thumbnails;
 
