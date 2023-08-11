@@ -3,6 +3,8 @@ import CustomError from "../errors/CustomError.js";
 import { ErrorsCause, ErrorsMessage, ErrorsName } from "../errors/enums/product.error.enum.js";
 import { generateProducts } from "../mocks/products.mock.js";
 import { apiResponser } from "../traits/ApiResponser.js";
+import jwt from "jsonwebtoken";
+import config from "../config/config.js";
 const URL = "http://localhost:8080/images/";
 
 export async function findAll (req, res) {
@@ -59,7 +61,12 @@ export async function findOne(req, res) {
 
 export async function createProduct(req, res) {
   try {
-    const { uid } = req.params;
+    const authHeader = req.headers.authorization;
+        console.log(authHeader);
+        const token = authHeader.split(" ")[1];
+        console.log(token);
+        const verify = jwt.verify(token, config.jwt.secret, {ignoreExpiration: true} );
+        const userId = verify.userId;
     const product = req.body;
     const thumbnails = req.body.files ? req.files.map(file => `${URL}${file.filename}`) : null;
 
@@ -73,7 +80,7 @@ export async function createProduct(req, res) {
 
     product.thumbnails = thumbnails;
 
-    const result = await productService.addProduct(product, uid);
+    const result = await productService.addProduct(product, userId);
 
     return apiResponser.successResponse(res, result);
 

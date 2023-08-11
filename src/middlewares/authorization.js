@@ -1,9 +1,24 @@
 import { apiResponser } from "../traits/ApiResponser.js";
+import jwt from "jsonwebtoken";
+import config from "../config/config.js";
+import { userService } from "../services/index.js";
 
 export function authorize(roles) {
-    return (req, res, next) => {
-        const currentUser = req.session.user;
-        const hasPermission = roles.some(role => currentUser.role === role);
+    return async (req, res, next) => {
+        const Header = req.headers;
+        console.log(Header);
+        const cookie = req.headers.cookie;
+        let sentencias = cookie.split(/=/)[1];
+        console.log(sentencias);
+        const authHeader = req.headers.authorization;
+        const token = authHeader.split(" ")[1];
+        const verify = jwt.verify(token, config.jwt.secret, {ignoreExpiration: true} );
+        console.log(verify);
+        const userId = verify.userId;
+        const user = await userService.findById(userId);
+        const userRole = user.role;
+
+        const hasPermission = roles.some(role => userRole === role);
         if(!hasPermission) return apiResponser.errorResponse(res, `No tienes permiso para realizar esta acción.`, 400);
 
         next();
