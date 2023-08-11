@@ -5,7 +5,7 @@ import { generateProducts } from "../mocks/products.mock.js";
 import { apiResponser } from "../traits/ApiResponser.js";
 import config from "../config/config.js";
 import jwt from "jsonwebtoken";
-const URL = "https://github.com/dempa21/project/tree/pfinal/src/public/images";
+const URL = "https://github.com/dempa21/project/tree/pfinal/src/public/images/";
 
 export async function findAll (req, res) {
     try {
