@@ -6,8 +6,8 @@ import passport from 'passport';
 
 const router = Router();
 
-router.get("/", passport.authenticate("current", {session: false, failureRedirect: '/login'}), home)
-router.get("/products", passport.authenticate("current", {session: false, failureRedirect: '/login'}), getProducts);
+router.get("/", passport.authenticate("current", {session: true, failureRedirect: '/login'}), home)
+router.get("/products", passport.authenticate("current", {session: true, failureRedirect: '/login'}), getProducts);
 router.get("/product/:productId", passport.authenticate("current", {session: false, failureRedirect: '/login'}), viewProduct);
 router.get("/cart/:cartId", passport.authenticate("current", {session: false, failureRedirect: '/login'}), authentication(true), viewCart);
 router.get("/cart/:cartId/purchase", passport.authenticate("current", {session: false, failureRedirect: '/login'}), authentication(true), purchase);
